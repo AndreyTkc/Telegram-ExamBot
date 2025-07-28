@@ -1,5 +1,4 @@
 import asyncio, time, random
-# from replit import db
 from datetime import datetime, timedelta
 from aiogram import F, Router, types
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
@@ -11,6 +10,7 @@ from app.subjects.math import *
 from app.subjects.physics import *
 from app.subjects.english import *
 from app.subjects.history import *
+from db.database import Base, engine, SessionLocal, UserStats, UserHistory
 
 router = Router()
 
@@ -215,7 +215,9 @@ async def cmd_start(message: Message, state: FSMContext):
     await state.clear()
     resetValues()
     await message.answer(
-        'Sveiks! Es esmu <i>“Eksāmena Bots”</i> un es palīdzēšu tev sagatavoties eksāmenam dažādos priekšmetos. Tu vari izvēlēties vajadzīgo priekšmetu no piedāvātā saraksta, testa veidu un sarežģītību.\nIevadi komandu /help, lai iepazītos ar visām bota komandām un sāktu gatavoties eksāmenam!',
+        'Sveiks! Es esmu <i>“Eksāmena Bots”</i> un es palīdzēšu tev sagatavoties eksāmenam dažādos priekšmetos. '
+        'Tu vari izvēlēties vajadzīgo priekšmetu no piedāvātā saraksta, testa veidu un sarežģītību.\nIevadi komandu '
+        '/help, lai iepazītos ar visām bota komandām un sāktu gatavoties eksāmenam!',
         reply_markup=types.ReplyKeyboardRemove())
 
 
@@ -224,40 +226,50 @@ async def cmd_help(message: Message, state: FSMContext):
     await state.clear()
     resetValues()
     await message.answer(
-        'Eksāmena bota komandas:\n/help - tiek atvērta bāzes izvēlne ar visām bota komandām.\n/faq - tiek atvērta izvēlne ar bieži uzdotiem jautājumiem.\n/test - tiek atvērta starta izvēlne ar testa, priekšmeta un sarežģītības izvēli.\n/daily - lietotājam tiek uzdots viens nejaušs ikdienas jautājums nejaušā sarežģītības līmenī, nejaušā priekšmetā.\n/stats - tiek atvērta lietotāja statistika.\n/history - tiek atvērta lietotāja vēstures izvēlne ar iepriekšējām testa vērtējumiem.\n/shop - tiek atvērta veikala izvēlne, kur saņemtos punktus var apmainīt pret bonusiem.',
+        'Eksāmena bota komandas:\n/help - tiek atvērta bāzes izvēlne ar visām bota komandām.\n/faq - tiek atvērta '
+        'izvēlne ar bieži uzdotiem jautājumiem.\n/test - tiek atvērta starta izvēlne ar testa, priekšmeta un sarežģītības '
+        'izvēli.\n/daily - lietotājam tiek uzdots viens nejaušs ikdienas jautājums nejaušā sarežģītības līmenī, nejaušā '
+        'priekšmetā.\n/stats - tiek atvērta lietotāja statistika.\n/history - tiek atvērta lietotāja vēstures izvēlne '
+        'ar iepriekšējām testa vērtējumiem.\n/shop - tiek atvērta veikala izvēlne, kur saņemtos punktus var apmainīt '
+        'pret bonusiem.',
         reply_markup=types.ReplyKeyboardRemove())
 
 
 @router.message(Command('stats', ignore_case=True))
 async def cmd_stats(message: Message, state: FSMContext):
+    db = SessionLocal()
     await state.clear()
     resetValues()
     activeBonusList = ''
-    correctAnswers = db.get("correct_answers")
-    wrongAnswers = db.get("wrong_answers")
+    correctAnswers = db.query(UserStats).filter_by(id=1).first().correct_answers
+    wrongAnswers = db.query(UserStats).filter_by(id=1).first().wrong_answers
     questionValue = correctAnswers + wrongAnswers
     if questionValue != 0:
         knowledgeKoeficient = round((correctAnswers / questionValue) * 100, 1)
     else:
         knowledgeKoeficient = 0
-    userPoints = db.get("points")
-    if db["third_test_lives_amount"] > 3:
+    userPoints = db.query(UserStats).filter_by(id=1).first().points
+    if db.query(UserStats).filter_by(id=1).first().third_test_lives_amount > 3:
         activeBonusList += f'{db["third_test_lives_amount"]} dzīvības trešā veida testā.\n'
-    if db["second_attempt_daily_activated"]:
+    if db.query(UserStats).filter_by(id=1).first().second_attempt_daily_activated:
         activeBonusList += '+1 mēģinājums ikdienas jautājumam.\n'
-    if db["explanation_for_wrong_answers_activated"]:
+    if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
         activeBonusList += 'Rādīt uzdevuma risinājumu, ja lietotājs nav pareizi atbildējis uz jautājumu.\n'
-    if db["point_multiplier"] > 1:
+    if db.query(UserStats).filter_by(id=1).first().point_multiplier > 1:
         activeBonusList += 'Visu punktu reizinātājs 2x.\n'
     if activeBonusList == '':
         activeBonusList = 'Nav aktīvo bonusu.'
     await message.answer(
-        f"Tava statistika:\nPareizas atbildes: <b>{correctAnswers}</b>\nNepareizas atbildes: <b>{wrongAnswers}</b>\nAtbildēto jautājumu skaits: <b>{questionValue}</b>\nZināšanu procents: <b>{knowledgeKoeficient}%</b>\nPunktu skaits: <b>{userPoints}</b>\n\nAktīvie bonusi:\n{activeBonusList}",
+        f"Tava statistika:\nPareizas atbildes: <b>{correctAnswers}</b>\nNepareizas atbildes: <b>{wrongAnswers}</b>"
+        f"\nAtbildēto jautājumu skaits: <b>{questionValue}</b>\nZināšanu procents: <b>{knowledgeKoeficient}%</b>\nPunktu "
+        f"skaits: <b>{userPoints}</b>\n\nAktīvie bonusi:\n{activeBonusList}",
         reply_markup=types.ReplyKeyboardRemove())
+    db.close()
 
 
 @router.message(Command('history', ignore_case=True))
 async def cmd_history(message: Message, state: FSMContext):
+    db = SessionLocal()
     await state.clear()
     resetValues()
     global historyList
@@ -265,23 +277,24 @@ async def cmd_history(message: Message, state: FSMContext):
     resetHistory()
     stopPage.set()
     await state.set_state(Prepare.history)
-    listLength = len(db["date_time"])
+    listLength = len(db.query(UserHistory).all())
     if listLength == 0:
         await message.answer('Nav testu vēstures.')
     elif listLength > 0:
         for i in range(listLength - 1, -1, -1):
             historyElement = (
-                f"Datums un laiks: <b>{db['date_time'][i]}</b>\n"
-                f"Priekšmets: <b>{db['subject'][i]}</b>\n"
-                f"Sarežģītības līmenis: <b>{db['difficulty'][i]}</b>\n"
-                f"Testa veids: <b>{db['test_mode'][i]}</b>\n"
-                f"Pareizas atbildes testā: <b>{db['correct_answers_in_test'][i]}</b>\n"
-                f"Nepareizas atbildes testā: <b>{db['wrong_answers_in_test'][i]}</b>\n"
-                f"Procentu izpilde: <b>{db['percentages'][i]}%</b>\n"
-                f"Testa izpildes laiks: <b>{db['test_time'][i]}</b>\n"
-                f"Saņemtie punkti: <b>{db['obtained_points'][i]}</b>")
+                f"Datums un laiks: <b>{db.query(UserHistory).all()[i].date_time}</b>\n"
+                f"Priekšmets: <b>{db.query(UserHistory).all()[i].subject}</b>\n"
+                f"Sarežģītības līmenis: <b>{db.query(UserHistory).all()[i].difficulty}</b>\n"
+                f"Testa veids: <b>{db.query(UserHistory).all()[i].test_mode}</b>\n"
+                f"Pareizas atbildes testā: <b>{db.query(UserHistory).all()[i].correct_answers_in_test}</b>\n"
+                f"Nepareizas atbildes testā: <b>{db.query(UserHistory).all()[i].wrong_answers_in_test}</b>\n"
+                f"Procentu izpilde: <b>{db.query(UserHistory).all()[i].percentages}%</b>\n"
+                f"Testa izpildes laiks: <b>{db.query(UserHistory).all()[i].test_time}</b>\n"
+                f"Saņemtie punkti: <b>{db.query(UserHistory).all()[i].obtained_points}</b>")
             historyList.append(historyElement)
         await showBatches(message, state)
+    db.close()
 
 
 async def showBatches(message: Message, state: FSMContext):
@@ -314,118 +327,155 @@ async def cmd_faq(message: Message, state: FSMContext):
     await state.clear()
     resetValues()
     await message.answer(
-        'Bieži uzdotie jautājumi:\n1. Kas ir eksāmenu bots?\n— Eksāmenu bots ir bots Telegram vietnē, kas palīdzēs Jums sagatavoties eksāmenam jebkurā no 4 pieejamajiem priekšmetiem, atbildot uz dažādu sarežģījumu testa jautājumiem.\n\n2. Kādi priekšmeti pieejami botā?\n— Matemātika, fizika, angļu valoda un vēsture.\n\n3. Kādi režīmi pieejami botā?\n— “10 jautājumu” režīms, ātrais režīms “1 jautājums”, sarežģītais režīms “10 jautājumi ar "3 dzīvībām"” un ikdienas nejaušais jautājums.\n\n4. Vai botā ir pieejami dažādi sarežģītības līmeņi?\n— Jā, botā ir pieejami: viegls, vidējs un sarežģīts režīms.\n\n5. Vai varu noskatīties pareizo atbildi un risinājumu jautājumām?\n— Jā, lai to izdarītu, vajag pareizi atbildet uz jautājumu vai nopirkt bonusu veikalā.\n\n6. Vai es varu atkārtoti atbildēt ikdienas jautājumu vienā dienā?\n— Nē, ikdienas jautājumam ir pieejams tikai 1 mēģinājums katru dienu. Ar bonusa palīdzību var atbildēt uz 2 ikdienas jautājumiem dienā.\n\n7. Vai es varu iztērēt saņemtos punktus?\n— Jā, jūs varat iegādāties bonusus veikalā par saņemtajiem punktiem ar komandas /shop palidzību.\n\n8. Vai jautājumi mainās testos?\n— Jā, jautājumi tiek nejauši atlasīti no jautājumu datubāzes. Tāpat mainās atbilžu kārtība.\n\n9. Kā es varu atgriezties sakumā no jebkuras vietas?\n— Ievadiet komandu /help, lai atgrieztos sākuma izvēlnē.',
+        'Bieži uzdotie jautājumi:\n1. Kas ir eksāmenu bots?\n— Eksāmenu bots ir bots Telegram vietnē, kas palīdzēs'
+        ' Jums sagatavoties eksāmenam jebkurā no 4 pieejamajiem priekšmetiem, atbildot uz dažādu sarežģījumu testa'
+        ' jautājumiem.\n\n2. Kādi priekšmeti pieejami botā?\n— Matemātika, fizika, angļu valoda un vēsture.\n\n'
+        '3. Kādi režīmi pieejami botā?\n— “10 jautājumu” režīms, ātrais režīms “1 jautājums”, sarežģītais režīms'
+        ' “10 jautājumi ar "3 dzīvībām"” un ikdienas nejaušais jautājums.\n\n4. Vai botā ir pieejami dažādi'
+        ' sarežģītības līmeņi?\n— Jā, botā ir pieejami: viegls, vidējs un sarežģīts režīms.\n\n5. Vai varu noskatīties'
+        ' pareizo atbildi un risinājumu jautājumām?\n— Jā, lai to izdarītu, vajag pareizi atbildet uz jautājumu vai'
+        ' nopirkt bonusu veikalā.\n\n6. Vai es varu atkārtoti atbildēt ikdienas jautājumu vienā dienā?\n— Nē, ikdienas'
+        ' jautājumam ir pieejams tikai 1 mēģinājums katru dienu. Ar bonusa palīdzību var atbildēt uz 2 ikdienas'
+        ' jautājumiem dienā.\n\n7. Vai es varu iztērēt saņemtos punktus?\n— Jā, jūs varat iegādāties bonusus veikalā'
+        ' par saņemtajiem punktiem ar komandas /shop palidzību.\n\n8. Vai jautājumi mainās testos?\n— Jā, jautājumi'
+        ' tiek nejauši atlasīti no jautājumu datubāzes. Tāpat mainās atbilžu kārtība.\n\n9. Kā es varu atgriezties'
+        ' sakumā no jebkuras vietas?\n— Ievadiet komandu /help, lai atgrieztos sākuma izvēlnē.',
         reply_markup=types.ReplyKeyboardRemove())
     await state.set_state(Prepare.selectSubject)
 
 
 @router.message(Command('shop', ignore_case=True))
 async def cmd_shop(message: Message, state: FSMContext):
+    db = SessionLocal()
     global shopText
     await state.clear()
     resetValues()
     shopText = await message.answer(
-        f'Veikals:\n1. +1 "dzīvība" pie testa - 10 jautājumu tests ar 3 “dzīvībām” (limits 5 dzīvības) — <b>100 punkti</b>.\n2. +1 mēģinājums ikdienas jautājumam (vienreizējs pirkums) — <b>200 punkti</b>.\n3. Rādīt uzdevuma risinājumu, ja lietotājs nav pareizi atbildējis uz jautājumu (vienreizējs pirkums) — <b>300 punkti</b>.\n4. Visu punktu reizinātājs 2x (vienreizējs pirkums) — <b>300 punkti</b>.\n\nTavs punktu atlikums: <b>{db["points"]}</b>\n\n[!] Bonusi tiek pirkti uz visiem laikiem.\n\nJa vēlies iegādāties vajadzīgo preci, nospied pogu ar atbilstošu preces numuru.',
+        f'Veikals:\n1. +1 "dzīvība" pie testa - 10 jautājumu tests ar 3 “dzīvībām” (limits 5 dzīvības) — '
+        f'<b>100 punkti</b>.\n2. +1 mēģinājums ikdienas jautājumam (vienreizējs pirkums) — <b>200 punkti</b>.\n'
+        f'3. Rādīt uzdevuma risinājumu, ja lietotājs nav pareizi atbildējis uz jautājumu (vienreizējs pirkums) — '
+        f'<b>300 punkti</b>.\n4. Visu punktu reizinātājs 2x (vienreizējs pirkums) — <b>300 punkti</b>.\n\nTavs punktu '
+        f'atlikums: <b>{db.query(UserStats).filter_by(id=1).first().points}</b>\n\n[!] Bonusi tiek pirkti uz visiem laikiem.\n\nJa vēlies iegādāties vajadzīgo '
+        f'preci, nospied pogu ar atbilstošu preces numuru.',
         reply_markup=kb.shopItems)
     await state.set_state(Prepare.shop)
-
+    db.close()
 
 async def shop_text(message: Message, state: FSMContext):
+    db = SessionLocal()
     global shopText
     shopText = await message.edit_text(
-        f'Veikals:\n1. +1 "dzīvība" pie testa - 10 jautājumu tests ar 3 “dzīvībām” (limits 5 dzīvības) — <b>100 punkti</b>.\n2. +1 mēģinājums ikdienas jautājumam (vienreizējs pirkums) — <b>200 punkti</b>.\n3. Rādīt uzdevuma risinājumu, ja lietotājs nav pareizi atbildējis uz jautājumu (vienreizējs pirkums) — <b>300 punkti</b>.\n4. Visu punktu reizinātājs 2x (vienreizējs pirkums) — <b>300 punkti</b>.\n\nTavs punktu atlikums: <b>{db["points"]}</b>\n\n[!] Bonusi tiek pirkti uz visiem laikiem.\n\nJa vēlies iegādāties vajadzīgo preci, nospied pogu ar atbilstošu preces numuru.',
+        f'Veikals:\n1. +1 "dzīvība" pie testa - 10 jautājumu tests ar 3 “dzīvībām” (limits 5 dzīvības) — <b>100 '
+        f'punkti</b>.\n2. +1 mēģinājums ikdienas jautājumam (vienreizējs pirkums) — <b>200 punkti</b>.\n3. Rādīt '
+        f'uzdevuma risinājumu, ja lietotājs nav pareizi atbildējis uz jautājumu (vienreizējs pirkums) — <b>300 '
+        f'punkti</b>.\n4. Visu punktu reizinātājs 2x (vienreizējs pirkums) — <b>300 punkti</b>.\n\nTavs punktu '
+        f'atlikums: <b>{db.query(UserStats).filter_by(id=1).first().points}</b>\n\n[!] Bonusi tiek pirkti uz visiem laikiem.\n\nJa vēlies iegādāties '
+        f'vajadzīgo preci, nospied pogu ar atbilstošu preces numuru.',
         reply_markup=kb.shopItems)
+    db.close()
 
 
 @router.callback_query(F.data == 'firstItem', Prepare.shop)
 async def shopFirst(callback: CallbackQuery, state: FSMContext):
-    if db["third_test_lives_amount"] >= 5:
+    db = SessionLocal()
+    if db.query(UserStats).filter_by(id=1).first().third_test_lives_amount >= 5:
         await callback.answer('Tu jau esi nopircis maksimālo bonusu skaitu!')
     else:
-        if db["points"] >= 100:
-            db["points"] -= 100
-            db["third_test_lives_amount"] += 1
+        if db.query(UserStats).filter_by(id=1).first().points >= 100:
+            db.query(UserStats).filter_by(id=1).first().points -= 100
+            db.query(UserStats).filter_by(id=1).first().third_test_lives_amount += 1
             await callback.answer(
                 "Apsveicu, tu nopirki bonusu “+1 'dzīvība' pie testa - 10 jautājumu tests ar 3 “dzīvībām”“ par 100 punktiem!",
                 show_alert=True)
             await shop_text(callback.message, state)
-        elif db["points"] < 100:
+        elif db.query(UserStats).filter_by(id=1).first().points < 100:
             await callback.answer(
                 'Tev nepietiek punktu, lai iegādātos šo preci!')
         else:
             await callback.answer('Radās kļūda, mēģiniet vēlreiz vēlāk!')
+    db.close()
 
 
 @router.callback_query(F.data == 'secondItem', Prepare.shop)
 async def shopSecond(callback: CallbackQuery, state: FSMContext):
-    if db["second_attempt_daily_activated"]:
+    db = SessionLocal()
+    if db.query(UserStats).filter_by(id=1).first().second_attempt_daily_activated:
         await callback.answer('Tu jau esi nopircis šo bonusu!')
     else:
-        if db["points"] >= 200:
-            db["points"] -= 200
-            db["second_attempt_daily_activated"] = True
+        if db.query(UserStats).filter_by(id=1).first().points >= 200:
+            db.query(UserStats).filter_by(id=1).first().points -= 200
+            db.query(UserStats).filter_by(id=1).first().second_attempt_daily_activated = True
             await callback.answer(
                 'Apsveicu, tu nopirki bonusu “+1 mēģinājums ikdienas jautājumam“ par 200 punktiem!',
                 show_alert=True)
             await shop_text(callback.message, state)
-        elif db["points"] < 200:
+        elif db.query(UserStats).filter_by(id=1).first().points < 200:
             await callback.answer(
                 'Tev nepietiek punktu, lai iegādātos šo preci!')
         else:
             await callback.answer('Radās kļūda, mēģiniet vēlreiz vēlāk!')
+    db.close()
 
 
 @router.callback_query(F.data == 'thirdItem', Prepare.shop)
 async def shopThird(callback: CallbackQuery, state: FSMContext):
-    if db["explanation_for_wrong_answers_activated"]:
+    db = SessionLocal()
+    if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
         await callback.answer('Tu jau esi nopircis šo bonusu!')
     else:
-        if db["points"] >= 300:
-            db["points"] -= 300
-            db["explanation_for_wrong_answers_activated"] = True
+        if db.query(UserStats).filter_by(id=1).first().points >= 300:
+            db.query(UserStats).filter_by(id=1).first().points -= 300
+            db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated = True
             await callback.answer(
-                'Apsveicu, tu nopirki bonusu “Rādīt uzdevuma risinājumu, ja lietotājs nav pareizi atbildējis uz jautājumu“ par 300 punktiem!',
+                'Apsveicu, tu nopirki bonusu “Rādīt uzdevuma risinājumu, ja lietotājs nav pareizi atbildējis uz '
+                'jautājumu“ par 300 punktiem!',
                 show_alert=True)
             await shop_text(callback.message, state)
-        elif db["points"] < 300:
+        elif db.query(UserStats).filter_by(id=1).first().points < 300:
             await callback.answer(
                 'Tev nepietiek punktu, lai iegādātos šo preci!')
         else:
             await callback.answer('Radās kļūda, mēģiniet vēlreiz vēlāk!')
+    db.close()
 
 
 @router.callback_query(F.data == 'fourthItem', Prepare.shop)
 async def shopFourth(callback: CallbackQuery, state: FSMContext):
-    if db["point_multiplier"] >= 2:
+    db = SessionLocal()
+    if db.query(UserStats).filter_by(id=1).first().point_multiplier >= 2:
         await callback.answer('Tu jau esi nopircis šo bonusu!')
     else:
-        if db["points"] >= 300:
-            db["points"] -= 300
-            db["point_multiplier"] = 2
+        if db.query(UserStats).filter_by(id=1).first().points >= 300:
+            db.query(UserStats).filter_by(id=1).first().points -= 300
+            db.query(UserStats).filter_by(id=1).first().point_multiplier = 2
             await callback.answer(
                 'Apsveicu, tu nopirki bonusu “Visu punktu reizinātājs 2x“ par 300 punktiem!',
                 show_alert=True)
             await shop_text(callback.message, state)
-        elif db["points"] < 300:
+        elif db.query(UserStats).filter_by(id=1).first().points < 300:
             await callback.answer(
                 'Tev nepietiek punktu, lai iegādātos šo preci!')
         else:
             await callback.answer('Radās kļūda, mēģiniet vēlreiz vēlāk!')
+    db.close()
 
 
 @router.message(Command('test', ignore_case=True))
 async def cmd_start_test(message: Message, state: FSMContext):
+    db = SessionLocal()
     await state.clear()
     resetValues()
     global lives
-    lives = db["third_test_lives_amount"]
+    lives = db.query(UserStats).filter_by(id=1).first().third_test_lives_amount
     await message.answer('Izvēlies sarakstā vajadzīgo priekšmetu.',
                          reply_markup=kb.subject)
     await state.set_state(Prepare.selectSubject)
+    db.close()
 
 
 @router.message(Prepare.selectSubject)
 async def selectSubject(message: Message, state: FSMContext):
+    db = SessionLocal()
     global selectedSubject
     global subjectValue
     bonusText = ''
@@ -448,12 +498,17 @@ async def selectSubject(message: Message, state: FSMContext):
             subjectValue = 'math'
             selectedSubject = 'Matemātika'
     await state.set_state(Prepare.selectTestType)
-    if db["third_test_lives_amount"] > 3:
-        bonusAttempts = db.get("third_test_lives_amount")
+    if db.query(UserStats).filter_by(id=1).first().third_test_lives_amount > 3:
+        bonusAttempts = db.query(UserStats).filter_by(id=1).first().third_test_lives_amount
         bonusText = f" (Ar bonusu: {bonusAttempts} dzīvības)"
     await message.answer(
-        f"Izvēlies testa veidu:\n1. 10 jautājumu tests. Beigās redzamas atbildes un risinājumi uz pareizi atbildētiem jautājumiem.\n2. 1 jautājumu ātrs tests. Beigās redzamas atbilde un risinājums uz pareizi atbildētu jautājumu.\n3. 10 jautājumu tests ar 3 “dzīvībām”{bonusText}. Par nepareizu atbildi -1 dzīve, kad paliek 0 dzīvības, tests beidzas un nav redzamas atbildes un risinājumi. Vairāk punktu par pareizajām atbildēm pēc veiksmīgas testa kārtošanas!",
+        f"Izvēlies testa veidu:\n1. 10 jautājumu tests. Beigās redzamas atbildes un risinājumi uz pareizi "
+        f"atbildētiem jautājumiem.\n2. 1 jautājumu ātrs tests. Beigās redzamas atbilde un risinājums uz pareizi atbildētu "
+        f"jautājumu.\n3. 10 jautājumu tests ar 3 “dzīvībām”{bonusText}. Par nepareizu atbildi -1 dzīve, kad paliek 0 dzīvības, "
+        f"tests beidzas un nav redzamas atbildes un risinājumi. Vairāk punktu par pareizajām atbildēm pēc veiksmīgas "
+        f"testa kārtošanas!",
         reply_markup=kb.testType)
+    db.close()
 
 
 @router.message(Prepare.selectTestType)
@@ -475,12 +530,14 @@ async def selectSubject(message: Message, state: FSMContext):
             selectedTestType = '10 jautājumu tests ar 3 “dzīvībām”'
         case _:
             await message.answer(
-                f"Tāda testa veida man nav: {message.text}\nIzvēlēts noklusējuma testa veids: 1. 10 jautājumu tests. Beigās redzamas atbildes un risinājumi uz pareizi atbildētiem jautājumiem."
+                f"Tāda testa veida man nav: {message.text}\nIzvēlēts noklusējuma testa veids: 1. 10 jautājumu tests. "
+                f"Beigās redzamas atbildes un risinājumi uz pareizi atbildētiem jautājumiem."
             )
             testType = 'firstTest'
             selectedTestType = '1. 10 jautājumu tests. Beigās redzamas atbildes un pareizi risinājumi.'
     await message.answer(
-        'Izvēlies testa sarežģītības līmeni:\n1. Viegls: vieglas pakāpes uzdevumi.\n2. Vidējais: vidējās pakāpes uzdevumi.\n3. Grūts: grūtās pakāpes uzdevumi.\n\nJo grūtāka sarežģītība, jo vairāk punktu par pareizām atbildēm!',
+        'Izvēlies testa sarežģītības līmeni:\n1. Viegls: vieglas pakāpes uzdevumi.\n2. Vidējais: vidējās pakāpes '
+        'uzdevumi.\n3. Grūts: grūtās pakāpes uzdevumi.\n\nJo grūtāka sarežģītība, jo vairāk punktu par pareizām atbildēm!',
         reply_markup=kb.difficulty)
     await state.set_state(Prepare.selectDifficulty)
 
@@ -510,7 +567,8 @@ async def selectSubject(message: Message, state: FSMContext):
             difficulty = 'easy'
             selectedDifficulty = 'Viegls'
     await message.answer(
-        f"Sāksim testu?\nIzvēlētais priekšmets: <b>{selectedSubject}</b>\nIzvēlētais testa veids: <b>{selectedTestType}</b>\nIzvēlēta sarežģītība: <b>{selectedDifficulty}</b>\nIevadi komandu <b>/starttest</b>, lai sāktu testu!"
+        f"Sāksim testu?\nIzvēlētais priekšmets: <b>{selectedSubject}</b>\nIzvēlētais testa veids: <b>{selectedTestType}"
+        f"</b>\nIzvēlēta sarežģītība: <b>{selectedDifficulty}</b>\nIevadi komandu <b>/starttest</b>, lai sāktu testu!"
     )
     await state.set_state(Prepare.startTest)
 
@@ -552,6 +610,7 @@ async def startMathTest(message: Message, state: FSMContext):
 
 
 async def mRandQuestion(message: Message, state: FSMContext):
+    db = SessionLocal()
     global spentTimeInTest
     global currentQuestion
     mathQuestions = dict
@@ -580,31 +639,40 @@ async def mRandQuestion(message: Message, state: FSMContext):
         if CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
             if currentQuestion == '':
                 currentQuestion = await message.answer(
-                    f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}"
+                    f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: "
+                    f"{answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}"
                 )
             elif currentQuestion != '':
                 currentQuestion = await currentQuestion.edit_text(
-                    f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}"
+                    f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: "
+                    f"{answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}"
                 )
         elif not CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
-                        f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
+                        f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                        f"{answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt "
+                        f"pareizi vēlreiz."
                     )
                 elif currentQuestion != '':
                     currentQuestion = await currentQuestion.edit_text(
-                        f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
+                        f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                        f"{answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini uzdevumu "
+                        f"atrisināt pareizi vēlreiz."
                     )
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
-                        f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
+                        f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                        f"{answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
                     )
                 elif currentQuestion != '':
                     currentQuestion = await currentQuestion.edit_text(
-                        f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
+                        f"<b>Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                        f"{answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
                     )
+    db.close()
 
 
 async def m1Question(message: Message, state: FSMContext):
