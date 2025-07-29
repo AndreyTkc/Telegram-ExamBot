@@ -676,6 +676,7 @@ async def mRandQuestion(message: Message, state: FSMContext):
 
 
 async def m1Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     global spentTimeInTest
     global currentQuestionOrder
@@ -707,34 +708,43 @@ async def m1Question(message: Message, state: FSMContext):
         if CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
             if currentQuestion == '':
                 currentQuestion = await message.answer(
-                    f"<b>1. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
+                    f"<b>1. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza"
+                    f"</ins>: {answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
                     reply_markup=kb.reviewKeyboard)
             elif currentQuestion != '':
                 currentQuestion = await currentQuestion.edit_text(
-                    f"<b>1. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
+                    f"<b>1. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza"
+                    f"</ins>: {answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
                     reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
-                        f"<b>1. Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
+                        f"<b>1. Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza"
+                        f"</ins>: {answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini uzdevumu "
+                        f"atrisināt pareizi vēlreiz.",
                         reply_markup=kb.reviewKeyboard)
                 elif currentQuestion != '':
                     currentQuestion = await currentQuestion.edit_text(
-                        f"<b>1. Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
+                        f"<b>1. Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                        f"{answerList[0]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
                         reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
-                        f"<b>1. Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
+                        f"<b>1. Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                        f"{answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
                         reply_markup=kb.reviewKeyboard)
                 elif currentQuestion != '':
                     currentQuestion = await currentQuestion.edit_text(
-                        f"<b>1. Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
+                        f"<b>1. Jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                        f"{answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
                         reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def m2Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     mathQuestions = dict
     match difficulty:
@@ -762,20 +772,25 @@ async def m2Question(message: Message, state: FSMContext):
         currentQuestionOrder = 2
         if CorrectlyAnsweredTenQuestions.is2QuestionAnsweredCorrectly:
             currentQuestion = await currentQuestion.edit_text(
-                f"<b>2. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[1]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
+                f"<b>2. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: "
+                f"{answerList[1]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is2QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
-                    f"<b>2. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[1]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
+                    f"<b>2. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                    f"{answerList[1]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu "
+                    f"vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
-                    f"<b>2. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[1]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
+                    f"<b>2. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                    f"{answerList[1]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-
+    db.close()
 
 async def m3Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     mathQuestions = dict
     match difficulty:
@@ -803,20 +818,26 @@ async def m3Question(message: Message, state: FSMContext):
         currentQuestionOrder = 3
         if CorrectlyAnsweredTenQuestions.is3QuestionAnsweredCorrectly:
             currentQuestion = await currentQuestion.edit_text(
-                f"<b>3. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[2]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
+                f"<b>3. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: "
+                f"{answerList[2]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is3QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
-                    f"<b>3. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[2]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
+                    f"<b>3. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                    f"{answerList[2]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu "
+                    f"vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
-                    f"<b>3. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[2]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
+                    f"<b>3. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                    f"{answerList[2]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def m4Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     mathQuestions = dict
     match difficulty:
@@ -844,17 +865,22 @@ async def m4Question(message: Message, state: FSMContext):
         currentQuestionOrder = 4
         if CorrectlyAnsweredTenQuestions.is4QuestionAnsweredCorrectly:
             currentQuestion = await currentQuestion.edit_text(
-                f"<b>4. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins><ins>pareiza</ins></ins>: {answerList[3]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
+                f"<b>4. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins><ins>pareiza</ins>"
+                f"</ins>: {answerList[3]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is4QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
-                    f"<b>3. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[3]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
+                    f"<b>3. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                    f"{answerList[3]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu "
+                    f"vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
-                    f"<b>3. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[3]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
+                    f"<b>3. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                    f"{answerList[3]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def m5Question(message: Message, state: FSMContext):
