@@ -20,6 +20,7 @@ class UserStats(Base):
     second_attempt_daily_activated = Column(Boolean, default=False)
     explanation_for_wrong_answers_activated = Column(Boolean, default=False)
     point_multiplier = Column(Integer, default=1)
+    completed = Column(Integer, default=0)
 
 class UserHistory(Base):
     __tablename__ = "user_history"

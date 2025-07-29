@@ -10,7 +10,8 @@ from app.subjects.math import *
 from app.subjects.physics import *
 from app.subjects.english import *
 from app.subjects.history import *
-from db.database import Base, engine, SessionLocal, UserStats, UserHistory
+from db.database import SessionLocal, UserStats, UserHistory
+import json
 
 router = Router()
 
@@ -884,6 +885,7 @@ async def m4Question(message: Message, state: FSMContext):
 
 
 async def m5Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     mathQuestions = dict
     match difficulty:
@@ -914,17 +916,19 @@ async def m5Question(message: Message, state: FSMContext):
                 f"<b>5. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[4]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is5QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>4. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[4]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>4. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[4]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def m6Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     mathQuestions = dict
     match difficulty:
@@ -955,17 +959,18 @@ async def m6Question(message: Message, state: FSMContext):
                 f"<b>6. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[5]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is6QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>6. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[5]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>6. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[5]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-
+    db.close()
 
 async def m7Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     mathQuestions = dict
     match difficulty:
@@ -996,17 +1001,19 @@ async def m7Question(message: Message, state: FSMContext):
                 f"<b>7. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[6]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is7QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>7. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[6]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>7. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[6]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def m8Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     mathQuestions = dict
     match difficulty:
@@ -1037,17 +1044,19 @@ async def m8Question(message: Message, state: FSMContext):
                 f"<b>8. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[7]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is8QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>8. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[7]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>8. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[7]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def m9Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     mathQuestions = dict
     match difficulty:
@@ -1078,17 +1087,19 @@ async def m9Question(message: Message, state: FSMContext):
                 f"<b>9. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[8]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is9QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>9. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[8]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>9. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[8]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def m10Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     mathQuestions = dict
     match difficulty:
@@ -1119,14 +1130,15 @@ async def m10Question(message: Message, state: FSMContext):
                 f"<b>10. jautājums:</b>\n{mathQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[9]}.\n\nPaskaidrojums: {mathQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is10QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>10. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[9]}.\n\nPaskaidrojums: {mathQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>10. jautājums:</b>\n{mathQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[9]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 @router.message(PhysicsTest.physicsTestSelect)
@@ -1146,6 +1158,7 @@ async def startPhysicsTest(message: Message, state: FSMContext):
 
 
 async def pRandQuestion(message: Message, state: FSMContext):
+    db = SessionLocal()
     global spentTimeInTest
     global currentQuestion
     physicsQuestions = dict
@@ -1181,7 +1194,7 @@ async def pRandQuestion(message: Message, state: FSMContext):
                     f"<b>Jautājums:</b>\n{physicsQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}",
                     reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>Jautājums:</b>\n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
@@ -1190,7 +1203,7 @@ async def pRandQuestion(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>Jautājums:</b>\n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
                     )
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>Jautājums:</b>\n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
@@ -1199,9 +1212,11 @@ async def pRandQuestion(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>Jautājums:</b>\n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
                     )
+    db.close()
 
 
 async def p1Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     global spentTimeInTest
     global currentQuestionOrder
@@ -1240,7 +1255,7 @@ async def p1Question(message: Message, state: FSMContext):
                     f"<b>1. jautājums:</b>\n{physicsQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}",
                     reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>1. Jautājums:</b>\n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
@@ -1249,7 +1264,7 @@ async def p1Question(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>1. Jautājums:</b>\n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
                         reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>1. Jautājums:</b>\n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
@@ -1258,9 +1273,10 @@ async def p1Question(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>1. Jautājums:</b>\n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
                         reply_markup=kb.reviewKeyboard)
-
+    db.close()
 
 async def p2Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     physicsQuestions = dict
     match difficulty:
@@ -1291,17 +1307,19 @@ async def p2Question(message: Message, state: FSMContext):
                 f"<b>2. jautājums:</b>\n{physicsQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[1]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is2QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>2. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[1]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>2. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[1]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def p3Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     physicsQuestions = dict
     match difficulty:
@@ -1332,17 +1350,19 @@ async def p3Question(message: Message, state: FSMContext):
                 f"<b>3. jautājums:</b>\n{physicsQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[2]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is3QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>3. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[2]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>3. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[2]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def p4Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     physicsQuestions = dict
     match difficulty:
@@ -1373,17 +1393,18 @@ async def p4Question(message: Message, state: FSMContext):
                 f"<b>4. jautājums:</b>\n{physicsQuestions['question']}\n\nMalacis, tava atbilde ir <ins><ins>pareiza</ins></ins>: {answerList[3]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is4QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>4. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[3]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>4. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[3]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-
+    db.close()
 
 async def p5Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     physicsQuestions = dict
     match difficulty:
@@ -1414,17 +1435,18 @@ async def p5Question(message: Message, state: FSMContext):
                 f"<b>5. jautājums:</b>\n{physicsQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[4]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is5QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>5. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[4]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>5. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[4]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-
+    db.close()
 
 async def p6Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     physicsQuestions = dict
     match difficulty:
@@ -1455,17 +1477,18 @@ async def p6Question(message: Message, state: FSMContext):
                 f"<b>6. jautājums:</b>\n{physicsQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[5]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is6QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>6. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[5]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>6. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[5]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-
+    db.close()
 
 async def p7Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     physicsQuestions = dict
     match difficulty:
@@ -1496,17 +1519,18 @@ async def p7Question(message: Message, state: FSMContext):
                 f"<b>7. jautājums:</b>\n{physicsQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[6]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is7QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>7. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[6]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>7. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[6]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-
+    db.close()
 
 async def p8Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     physicsQuestions = dict
     match difficulty:
@@ -1537,17 +1561,19 @@ async def p8Question(message: Message, state: FSMContext):
                 f"<b>8. jautājums:</b>\n{physicsQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[7]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is8QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>8. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[7]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>8. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[7]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def p9Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     physicsQuestions = dict
     match difficulty:
@@ -1578,17 +1604,19 @@ async def p9Question(message: Message, state: FSMContext):
                 f"<b>9. jautājums:</b>\n{physicsQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[8]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is9QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>9. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[8]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>9. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[8]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def p10Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     physicsQuestions = dict
     match difficulty:
@@ -1619,14 +1647,15 @@ async def p10Question(message: Message, state: FSMContext):
                 f"<b>10. jautājums:</b>\n{physicsQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[9]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is10QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>10. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[9]}.\n\nPaskaidrojums: {physicsQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>10. jautājums:</b>n{physicsQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[9]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 @router.message(EnglishTest.englishTestSelect)
@@ -1642,6 +1671,7 @@ async def startEnglishTest(message: Message, state: FSMContext):
 
 
 async def eRandQuestion(message: Message, state: FSMContext):
+    db = SessionLocal()
     global spentTimeInTest
     global currentQuestion
     englishQuestions = dict
@@ -1677,7 +1707,7 @@ async def eRandQuestion(message: Message, state: FSMContext):
                     f"<b>Jautājums:</b>\n{englishQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {englishQuestions['explanation']}"
                 )
         elif not CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>Jautājums:</b>\n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
@@ -1686,7 +1716,7 @@ async def eRandQuestion(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>Jautājums:</b>\n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
                     )
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>Jautājums:</b>\n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
@@ -1695,9 +1725,11 @@ async def eRandQuestion(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>Jautājums:</b>\n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
                     )
+    db.close()
 
 
 async def e1Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     global spentTimeInTest
     global currentQuestionOrder
@@ -1736,7 +1768,7 @@ async def e1Question(message: Message, state: FSMContext):
                     f"<b>1. jautājums:</b>\n{englishQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {englishQuestions['explanation']}",
                     reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>1. Jautājums:</b>\n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
@@ -1745,7 +1777,7 @@ async def e1Question(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>1. Jautājums:</b>\n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
                         reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>1. Jautājums:</b>\n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
@@ -1754,9 +1786,11 @@ async def e1Question(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>1. Jautājums:</b>\n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
                         reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def e2Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     englishQuestions = dict
     match difficulty:
@@ -1787,17 +1821,19 @@ async def e2Question(message: Message, state: FSMContext):
                 f"<b>2. jautājums:</b>\n{englishQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[1]}.\n\nPaskaidrojums: {englishQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is2QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>2. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[1]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>2. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[1]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def e3Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     englishQuestions = dict
     match difficulty:
@@ -1828,17 +1864,19 @@ async def e3Question(message: Message, state: FSMContext):
                 f"<b>3. jautājums:</b>\n{englishQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[2]}.\n\nPaskaidrojums: {englishQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is3QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>3. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[2]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>3. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[2]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def e4Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     englishQuestions = dict
     match difficulty:
@@ -1869,17 +1907,19 @@ async def e4Question(message: Message, state: FSMContext):
                 f"<b>4. jautājums:</b>\n{englishQuestions['question']}\n\nMalacis, tava atbilde ir <ins><ins>pareiza</ins></ins>: {answerList[3]}.\n\nPaskaidrojums: {englishQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is4QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>4. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[3]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>4. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[3]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def e5Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     englishQuestions = dict
     match difficulty:
@@ -1910,17 +1950,19 @@ async def e5Question(message: Message, state: FSMContext):
                 f"<b>5. jautājums:</b>\n{englishQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[4]}.\n\nPaskaidrojums: {englishQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is5QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>5. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[4]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>5. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[4]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def e6Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     englishQuestions = dict
     match difficulty:
@@ -1951,17 +1993,19 @@ async def e6Question(message: Message, state: FSMContext):
                 f"<b>6. jautājums:</b>\n{englishQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[5]}.\n\nPaskaidrojums: {englishQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is6QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>6. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[5]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>6. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[5]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def e7Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     englishQuestions = dict
     match difficulty:
@@ -1992,17 +2036,19 @@ async def e7Question(message: Message, state: FSMContext):
                 f"<b>7. jautājums:</b>\n{englishQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[6]}.\n\nPaskaidrojums: {englishQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is7QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>7. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[6]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>7. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[6]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def e8Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     englishQuestions = dict
     match difficulty:
@@ -2033,17 +2079,19 @@ async def e8Question(message: Message, state: FSMContext):
                 f"<b>8. jautājums:</b>\n{englishQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[7]}.\n\nPaskaidrojums: {englishQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is8QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>8. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[7]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>8. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[7]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def e9Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     englishQuestions = dict
     match difficulty:
@@ -2074,17 +2122,18 @@ async def e9Question(message: Message, state: FSMContext):
                 f"<b>9. jautājums:</b>\n{englishQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[8]}.\n\nPaskaidrojums: {englishQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is9QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>9. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[8]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>9. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[8]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-
+    db.close()
 
 async def e10Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     englishQuestions = dict
     match difficulty:
@@ -2115,14 +2164,15 @@ async def e10Question(message: Message, state: FSMContext):
                 f"<b>10. jautājums:</b>\n{englishQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[9]}.\n\nPaskaidrojums: {englishQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is10QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>10. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[9]}.\n\nPaskaidrojums: {englishQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>10. jautājums:</b>n{englishQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[9]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 @router.message(HistoryTest.historyTestSelect)
@@ -2138,6 +2188,7 @@ async def startHistoryTest(message: Message, state: FSMContext):
 
 
 async def hRandQuestion(message: Message, state: FSMContext):
+    db = SessionLocal()
     global spentTimeInTest
     global currentQuestion
     historyQuestions = dict
@@ -2173,7 +2224,7 @@ async def hRandQuestion(message: Message, state: FSMContext):
                     f"<b>Jautājums:</b>\n{historyQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {historyQuestions['explanation']}"
                 )
         elif not CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>Jautājums:</b>\n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
@@ -2182,7 +2233,7 @@ async def hRandQuestion(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>Jautājums:</b>\n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
                     )
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>Jautājums:</b>\n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
@@ -2191,9 +2242,11 @@ async def hRandQuestion(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>Jautājums:</b>\n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz."
                     )
+    db.close()
 
 
 async def h1Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     global spentTimeInTest
     global currentQuestionOrder
@@ -2232,7 +2285,7 @@ async def h1Question(message: Message, state: FSMContext):
                     f"<b>1. jautājums:</b>\n{historyQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {historyQuestions['explanation']}",
                     reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>1. Jautājums:</b>\n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
@@ -2241,7 +2294,7 @@ async def h1Question(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>1. Jautājums:</b>\n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
                         reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
                         f"<b>1. Jautājums:</b>\n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
@@ -2250,9 +2303,11 @@ async def h1Question(message: Message, state: FSMContext):
                     currentQuestion = await currentQuestion.edit_text(
                         f"<b>1. Jautājums:</b>\n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPamēģini uzdevumu atrisināt pareizi vēlreiz.",
                         reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def h2Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     historyQuestions = dict
     match difficulty:
@@ -2283,17 +2338,19 @@ async def h2Question(message: Message, state: FSMContext):
                 f"<b>2. jautājums:</b>\n{historyQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[1]}.\n\nPaskaidrojums: {historyQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is2QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>2. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[1]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>2. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[1]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def h3Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     historyQuestions = dict
     match difficulty:
@@ -2324,17 +2381,19 @@ async def h3Question(message: Message, state: FSMContext):
                 f"<b>3. jautājums:</b>\n{historyQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[2]}.\n\nPaskaidrojums: {historyQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is3QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>3. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[2]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>3. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[2]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def h4Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     historyQuestions = dict
     match difficulty:
@@ -2365,17 +2424,19 @@ async def h4Question(message: Message, state: FSMContext):
                 f"<b>4. jautājums:</b>\n{historyQuestions['question']}\n\nMalacis, tava atbilde ir <ins><ins>pareiza</ins></ins>: {answerList[3]}.\n\nPaskaidrojums: {historyQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is4QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>4. jautājums:</b>\n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[3]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>4. jautājums:</b>\n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[3]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def h5Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     historyQuestions = dict
     match difficulty:
@@ -2406,17 +2467,19 @@ async def h5Question(message: Message, state: FSMContext):
                 f"<b>5. jautājums:</b>\n{historyQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[4]}.\n\nPaskaidrojums: {historyQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is5QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>5. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[4]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>5. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[4]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def h6Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     historyQuestions = dict
     match difficulty:
@@ -2447,17 +2510,19 @@ async def h6Question(message: Message, state: FSMContext):
                 f"<b>6. jautājums:</b>\n{historyQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[5]}.\n\nPaskaidrojums: {historyQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is6QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>6. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[5]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>6. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[5]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def h7Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     historyQuestions = dict
     match difficulty:
@@ -2488,17 +2553,19 @@ async def h7Question(message: Message, state: FSMContext):
                 f"<b>7. jautājums:</b>\n{historyQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[6]}.\n\nPaskaidrojums: {historyQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is7QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>7. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[6]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>7. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[6]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def h8Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     historyQuestions = dict
     match difficulty:
@@ -2529,17 +2596,19 @@ async def h8Question(message: Message, state: FSMContext):
                 f"<b>8. jautājums:</b>\n{historyQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[7]}.\n\nPaskaidrojums: {historyQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is8QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>8. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[7]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>8. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[7]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def h9Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     historyQuestions = dict
     match difficulty:
@@ -2570,17 +2639,19 @@ async def h9Question(message: Message, state: FSMContext):
                 f"<b>9. jautājums:</b>\n{historyQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[8]}.\n\nPaskaidrojums: {historyQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is9QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>9. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[8]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>9. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[8]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def h10Question(message: Message, state: FSMContext):
+    db = SessionLocal()
     global currentQuestion
     historyQuestions = dict
     match difficulty:
@@ -2611,21 +2682,23 @@ async def h10Question(message: Message, state: FSMContext):
                 f"<b>10. jautājums:</b>\n{historyQuestions['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[9]}.\n\nPaskaidrojums: {historyQuestions['explanation']}",
                 reply_markup=kb.reviewKeyboard)
         elif not CorrectlyAnsweredTenQuestions.is10QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>10. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[9]}.\n\nPaskaidrojums: {historyQuestions['explanation']}\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 currentQuestion = await currentQuestion.edit_text(
                     f"<b>10. jautājums:</b>n{historyQuestions['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[9]}.\n\nPamēģini atrisināt uzdevumu vēlreiz pareizi!",
                     reply_markup=kb.reviewKeyboard)
+    db.close()
 
 
 async def TestEnd(message: Message, state: FSMContext):
+    db = SessionLocal()
     await state.set_state(Prepare.testEnd)
     global spentTimeInTest
     global currentQuestion
-    pointMultiplier = db.get("point_multiplier")
+    pointMultiplier = db.query(UserStats).filter_by(id=1).first().point_multiplier
     timeSpent = ''
     points = 0
     currentDateTime = datetime.now()
@@ -2650,12 +2723,19 @@ async def TestEnd(message: Message, state: FSMContext):
         timeSpent = f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}"
         if testType == 'thirdTest':
             points *= 2
-        db["correct_answers"] += correctAnswersInTest
-        db["wrong_answers"] += wrongAnswersInTest
-        db["points"] += points
-        db["date_time"].append(str(fixedCurrentDateTime))
-        db["subject"].append(selectedSubject)
-        db["difficulty"].append(selectedDifficulty)
+        db.query(UserStats).filter_by(id=1).first().correct_answers += correctAnswersInTest
+        db.query(UserStats).filter_by(id=1).first().wrong_answers += wrongAnswersInTest
+        db.query(UserStats).filter_by(id=1).first().points += points
+        date_time_list = json.loads(db.query(UserStats).filter_by(id=1).first().date_time)
+        date_time_list.append(str(fixedCurrentDateTime))
+        db.query(UserStats).filter_by(id=1).first().date_time = json.dumps(date_time_list)
+        user_history = db.query(UserHistory).filter_by(user_id=1).first()
+        subject_list = json.loads(user_history.subject)
+        difficulty_list = json.loads(user_history.difficulty)
+        subject_list.append(selectedSubject)
+        difficulty_list.append(selectedDifficulty)
+        user_history.subject = json.dumps(subject_list)
+        user_history.difficulty = json.dumps(difficulty_list)
         if selectedTestType != '':
             db["test_mode"].append(selectedTestType)
         elif selectedTestType == '':
@@ -2678,21 +2758,24 @@ async def TestEnd(message: Message, state: FSMContext):
             minutes, seconds = divmod(remainder, 60)
         percentages = round((correctAnswersInTest / 10) * 100)
         timeSpent = f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}"
-        db["correct_answers"] += correctAnswersInTest
-        db["wrong_answers"] += wrongAnswersInTest
-        db["date_time"].append(str(fixedCurrentDateTime))
+        db.query(UserStats).filter_by(id=1).first().correct_answers += correctAnswersInTest
+        db.query(UserStats).filter_by(id=1).first().wrong_answers += wrongAnswersInTest
+        date_time_list = json.loads(db.query(UserStats).filter_by(id=1).first().date_time)
+        date_time_list.append(str(fixedCurrentDateTime))
+        db.query(UserStats).filter_by(id=1).first().date_time = json.dumps(date_time_list)
         db["subject"].append(selectedSubject)
         db["difficulty"].append(selectedDifficulty)
+        user_history = db.query(UserHistory).filter_by(user_id=1).first()
         if selectedTestType != '':
-            db["test_mode"].append(selectedTestType)
-        elif selectedTestType == '':
-            db["test_mode"].append("Ikdienas jautājums")
-        db["correct_answers_in_test"].append(correctAnswersInTest)
-        db["wrong_answers_in_test"].append(wrongAnswersInTest)
-        db["percentages"].append(percentages)
-        db["test_time"].append(timeSpent)
-        db["obtained_points"].append(points)
-        wrongQuestionNumber = db.get("third_test_lives_amount")
+            user_history.test_mode = json.dumps(json.loads(user_history.test_mode) + [selectedTestType])
+        else:
+            user_history.test_mode = json.dumps(json.loads(user_history.test_mode) + ["Ikdienas jautājums"])
+            user_history.correct_answers_in_test = json.dumps(json.loads(user_history.correct_answers_in_test) + [correctAnswersInTest])
+            user_history.wrong_answers_in_test = json.dumps(json.loads(user_history.wrong_answers_in_test) + [wrongAnswersInTest])
+            user_history.percentages = json.dumps(json.loads(user_history.percentages) + [percentages])
+            user_history.test_time = json.dumps(json.loads(user_history.test_time) + [timeSpent])
+            user_history.obtained_points = json.dumps(json.loads(user_history.obtained_points) + [points])
+        wrongQuestionNumber = db.query(UserStats).filter_by(id=1).first().third_test_lives_amount
         await currentQuestion.edit_text(
             f"Diemžēl tu nepareizi atbildēji uz {wrongQuestionNumber} jautājumiem, un esi izkritis no testa. Pamēģini vēlreiz!\nPareizās atbildes: <b>{correctAnswersInTest}</b>\nNepareizas atbildes: <b>{wrongAnswersInTest}</b>\nProcentu izpilde: <b>{percentages}%</b>\nLaiks: <b>{timeSpent}</b>",
             reply_markup=kb.tryAgain)
@@ -2706,40 +2789,54 @@ async def TestEnd(message: Message, state: FSMContext):
         percentages = round(correctAnswersInTest * 100)
         timeSpent = f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}"
         points *= 5
-        db["correct_answers"] += correctAnswersInTest
-        db["wrong_answers"] += wrongAnswersInTest
-        db["points"] += points
-        db["date_time"].append(str(fixedCurrentDateTime))
-        db["subject"].append(selectedSubject)
-        db["difficulty"].append(selectedDifficulty)
+        db.query(UserStats).filter_by(id=1).first().correct_answers += correctAnswersInTest
+        db.query(UserStats).filter_by(id=1).first().wrong_answers += wrongAnswersInTest
+        db.query(UserStats).filter_by(id=1).first().points += points
+        date_time_list = json.loads(db.query(UserHistory).filter_by(id=1).first().date_time)
+        date_time_list.append(str(fixedCurrentDateTime))
+        db.query(UserHistory).filter_by(id=1).first().date_time = json.dumps(date_time_list)
+        user_history = db.query(UserHistory).filter_by(user_id=1).first()
+        user_history.subject = json.dumps(json.loads(user_history.subject) + [selectedSubject])
+        user_history.difficulty = json.dumps(json.loads(user_history.difficulty) + [selectedDifficulty])
         if selectedTestType != '':
-            db["test_mode"].append(selectedTestType)
-        elif selectedTestType == '':
-            db["test_mode"].append("Ikdienas jautājums")
-        db["correct_answers_in_test"].append(correctAnswersInTest)
-        db["wrong_answers_in_test"].append(wrongAnswersInTest)
-        db["percentages"].append(percentages)
-        db["test_time"].append(timeSpent)
-        db["obtained_points"].append(points)
-        if not db["second_attempt_daily_activated"]:
-            db["completed"] += 1
+            user_history.test_mode = json.dumps(json.loads(user_history.test_mode) + [selectedTestType])
+        else:
+            user_history.test_mode = json.dumps(json.loads(user_history.test_mode) + ["Ikdienas jautājums"])
+        user_history.correct_answers_in_test = json.dumps(json.loads(user_history.correct_answers_in_test) + [correctAnswersInTest])
+        user_history.wrong_answers_in_test = json.dumps(json.loads(user_history.wrong_answers_in_test) + [wrongAnswersInTest])
+        user_history.percentages = json.dumps(json.loads(user_history.percentages) + [percentages])
+        user_history.test_time = json.dumps(json.loads(user_history.test_time) + [timeSpent])
+        user_history.obtained_points = json.dumps(json.loads(user_history.obtained_points) + [points])
+        if not db.query(UserStats).filter_by(id=1).first().second_attempt_daily_activated:
+            db.query(UserStats).filter_by(id=1).first().completed += 1
             await currentQuestion.edit_text(
                 f"Apsveicu, tu atbildēji uz ikdienas jautājumu!\nPareizās atbildes: <b>{correctAnswersInTest}</b>\nNepareizas atbildes: <b>{wrongAnswersInTest}</b>\nProcentu izpilde: <b>{percentages}%</b>\nLaiks: <b>{timeSpent}</b>\nPar testa kārtošanu tu saņēmi <b>{points}</b> punktus!\n\nIevadi <b>/review</b>, lai apskatītu uzdevumu un risinājumu."
             )
-        elif db["second_attempt_daily_activated"]:
-            db["completed"] += 1
+        elif db.query(UserStats).filter_by(id=1).first().second_attempt_daily_activated:
+            db.query(UserStats).filter_by(id=1).first().completed += 1
             await currentQuestion.edit_text(
                 f"Apsveicu, tu atbildēji uz ikdienas jautājumu!\nPareizās atbildes: <b>{correctAnswersInTest}</b>\nNepareizas atbildes: <b>{wrongAnswersInTest}</b>\nProcentu izpilde: <b>{percentages}%</b>\nLaiks: <b>{timeSpent}</b>\nPar testa kārtošanu tu saņēmi <b>{points}</b> punktus!\n\nIevadi <b>/review</b>, lai apskatītu uzdevumu un risinājumu.",
                 reply_markup=kb.tryAgain)
         currentQuestion = ''
-    list_length = len(db["date_time"])
+    list_length = len(json.loads(db.query(UserHistory).filter_by(user_id=1).first().date_time))
     if list_length > 20:
-        for key in keys:
-            db[key] = db[key][-20:]
+        user_history = db.query(UserHistory).filter_by(user_id=1).first()
+        user_history.date_time = json.dumps(json.loads(user_history.date_time)[-20:])
+        user_history.subject = json.dumps(json.loads(user_history.subject)[-20:])
+        user_history.difficulty = json.dumps(json.loads(user_history.difficulty)[-20:])
+        user_history.test_mode = json.dumps(json.loads(user_history.test_mode)[-20:])
+        user_history.correct_answers_in_test = json.dumps(json.loads(user_history.correct_answers_in_test)[-20:])
+        user_history.wrong_answers_in_test = json.dumps(json.loads(user_history.wrong_answers_in_test)[-20:])
+        user_history.percentages = json.dumps(json.loads(user_history.percentages)[-20:])
+        user_history.test_time = json.dumps(json.loads(user_history.test_time)[-20:])
+        user_history.obtained_points = json.dumps(json.loads(user_history.obtained_points)[-20:])
+        db.commit()
+    db.close()
 
 
 @router.message(Command('daily', ignore_case=True))
 async def dailyTask(message: Message, state: FSMContext):
+    db = SessionLocal()
     global randomQuestion
     global spentTimeInTest
     global currentQuestion
@@ -2753,8 +2850,8 @@ async def dailyTask(message: Message, state: FSMContext):
     if not reviewMode:
         await state.clear()
         resetValues()
-        if db["second_attempt_daily_activated"]:
-            if db["completed"] < 2:
+        if db.query(UserStats).filter_by(id=1).first().second_attempt_daily_activated:
+            if db.query(UserStats).filter_by(id=1).first().completed < 2:
                 await message.answer(
                     "Tev ir iespēja atbildēt uz nejaušu ikdienas jautājumu, lai saņemtu punktus!"
                 )
@@ -2869,8 +2966,8 @@ async def dailyTask(message: Message, state: FSMContext):
                 await message.answer(
                     "Šodien tu jau atbildēji uz ikdienas jautājumu. Nāc rīt, mēs tev sagatavosim jaunu jautājumu!"
                 )
-        elif not db["second_attempt_daily_activated"]:
-            if db["completed"] < 1:
+        elif not db.query(UserStats).filter_by(id=1).first().second_attempt_daily_activated:
+            if db.query(UserStats).filter_by(id=1).first().completed < 1:
                 await message.answer(
                     "Tev ir iespēja atbildēt uz nejaušu ikdienas jautājumu, lai saņemtu punktus!"
                 )
@@ -2989,32 +3086,39 @@ async def dailyTask(message: Message, state: FSMContext):
         if CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
             if currentQuestion == '':
                 currentQuestion = await message.answer(
-                    f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {randomQuestion['explanation']}"
+                    f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: "
+                    f"{answerList[0]}.\n\nPaskaidrojums: {randomQuestion['explanation']}"
                 )
             elif currentQuestion != '':
                 currentQuestion = await currentQuestion.edit_text(
-                    f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {randomQuestion['explanation']}"
+                    f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nMalacis, tava atbilde ir <ins>pareiza</ins>: "
+                    f"{answerList[0]}.\n\nPaskaidrojums: {randomQuestion['explanation']}"
                 )
         elif not CorrectlyAnsweredTenQuestions.is1QuestionAnsweredCorrectly:
-            if db["explanation_for_wrong_answers_activated"]:
+            if db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
-                        f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {randomQuestion['explanation']}"
+                        f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                        f"{answerList[0]}.\n\nPaskaidrojums: {randomQuestion['explanation']}"
                     )
                 elif currentQuestion != '':
                     currentQuestion = await currentQuestion.edit_text(
-                        f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}.\n\nPaskaidrojums: {randomQuestion['explanation']}"
+                        f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                        f"{answerList[0]}.\n\nPaskaidrojums: {randomQuestion['explanation']}"
                     )
-            elif not db["explanation_for_wrong_answers_activated"]:
+            elif not db.query(UserStats).filter_by(id=1).first().explanation_for_wrong_answers_activated:
                 if currentQuestion == '':
                     currentQuestion = await message.answer(
-                        f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}."
+                        f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                        f"{answerList[0]}."
                     )
                 elif currentQuestion != '':
                     currentQuestion = await currentQuestion.edit_text(
-                        f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: {answerList[0]}."
+                        f"<b>Jautājums:</b>\n{randomQuestion['question']}\n\nTava atbilde ir <ins>nepareiza</ins>: "
+                        f"{answerList[0]}."
                     )
         tryTestAgainResetValues()
+    db.close()
 
 
 @router.message(Command('review', ignore_case=True), Prepare.testEnd)
@@ -3082,8 +3186,20 @@ async def forward(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == 'deleteHistory', Prepare.history)
 async def deleteHistory(callback: CallbackQuery, state: FSMContext):
     global historyPage
-    for key in keys:
-        db[key] = []
+    db = SessionLocal()
+    user_history = db.query(UserHistory).filter_by(user_id=1).first()
+    if user_history:
+        user_history.date_time = "[]"
+        user_history.subject = "[]"
+        user_history.difficulty = "[]"
+        user_history.test_mode = "[]"
+        user_history.correct_answers_in_test = "[]"
+        user_history.wrong_answers_in_test = "[]"
+        user_history.percentages = "[]"
+        user_history.test_time = "[]"
+        user_history.obtained_points = "[]"
+        db.commit()
+    db.close()
     await historyPage.edit_text('Vēsture ir dzēsta.')
 
 
@@ -3132,8 +3248,9 @@ async def goForward(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == 'tryTestAgain', Prepare.testEnd)
 @router.callback_query(F.data == 'tryTestAgain', Prepare.review)
 async def tryTest(callback: CallbackQuery, state: FSMContext):
+    db = SessionLocal()
     global lives
-    lives = db["third_test_lives_amount"]
+    lives = db.query(UserStats).filter_by(id=1).first().third_test_lives_amount
     if dailyTaskActive:
         await dailyTask(callback.message, state)
         return
@@ -3148,6 +3265,7 @@ async def tryTest(callback: CallbackQuery, state: FSMContext):
             await startEnglishTest(callback.message, state)
         case 'history':
             await startHistoryTest(callback.message, state)
+    db.close()
 
 
 @router.callback_query(F.data == 'a')
