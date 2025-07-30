@@ -2726,25 +2726,47 @@ async def TestEnd(message: Message, state: FSMContext):
         db.query(UserStats).filter_by(id=1).first().correct_answers += correctAnswersInTest
         db.query(UserStats).filter_by(id=1).first().wrong_answers += wrongAnswersInTest
         db.query(UserStats).filter_by(id=1).first().points += points
-        date_time_list = json.loads(db.query(UserStats).filter_by(id=1).first().date_time)
+
+        date_time = db.query(UserHistory).filter_by(id=1).first().date_time
+        date_time_list = json.loads(date_time) if date_time and date_time != '' else []
         date_time_list.append(str(fixedCurrentDateTime))
-        db.query(UserStats).filter_by(id=1).first().date_time = json.dumps(date_time_list)
+        db.query(UserHistory).filter_by(id=1).first().date_time = json.dumps(date_time_list)
+
         user_history = db.query(UserHistory).filter_by(user_id=1).first()
-        subject_list = json.loads(user_history.subject)
-        difficulty_list = json.loads(user_history.difficulty)
+
+        subject_list = json.loads(user_history.subject) if user_history.subject and user_history.subject != '' else []
+        difficulty_list = json.loads(user_history.difficulty) if user_history.difficulty and user_history.difficulty != '' else []
         subject_list.append(selectedSubject)
         difficulty_list.append(selectedDifficulty)
         user_history.subject = json.dumps(subject_list)
         user_history.difficulty = json.dumps(difficulty_list)
+
+        test_mode_list = json.loads(user_history.test_mode) if user_history.test_mode and user_history.test_mode != '' else []
         if selectedTestType != '':
-            db["test_mode"].append(selectedTestType)
-        elif selectedTestType == '':
-            db["test_mode"].append("Ikdienas jautājums")
-        db["correct_answers_in_test"].append(correctAnswersInTest)
-        db["wrong_answers_in_test"].append(wrongAnswersInTest)
-        db["percentages"].append(percentages)
-        db["test_time"].append(timeSpent)
-        db["obtained_points"].append(points)
+            test_mode_list.append(selectedTestType)
+        else:
+            test_mode_list.append("Ikdienas jautājums")
+        user_history.test_mode = json.dumps(test_mode_list)
+
+        correct_answers_list = json.loads(user_history.correct_answers_in_test) if user_history.correct_answers_in_test and user_history.correct_answers_in_test != '' else []
+        correct_answers_list.append(correctAnswersInTest)
+        user_history.correct_answers_in_test = json.dumps(correct_answers_list)
+
+        wrong_answers_list = json.loads(user_history.wrong_answers_in_test) if user_history.wrong_answers_in_test and user_history.wrong_answers_in_test != '' else []
+        wrong_answers_list.append(wrongAnswersInTest)
+        user_history.wrong_answers_in_test = json.dumps(wrong_answers_list)
+
+        percentages_list = json.loads(user_history.percentages) if user_history.percentages and user_history.percentages != '' else []
+        percentages_list.append(percentages)
+        user_history.percentages = json.dumps(percentages_list)
+
+        test_time_list = json.loads(user_history.test_time) if user_history.test_time and user_history.test_time != '' else []
+        test_time_list.append(timeSpent)
+        user_history.test_time = json.dumps(test_time_list)
+
+        obtained_points_list = json.loads(user_history.obtained_points) if user_history.obtained_points and user_history.obtained_points != '' else []
+        obtained_points_list.append(points)
+        user_history.obtained_points = json.dumps(obtained_points_list)
         await currentQuestion.edit_text(
             f"Apsveicu, tu pabeidzi testu!\nPareizās atbildes: <b>{correctAnswersInTest}</b>\nNepareizas atbildes: <b>{wrongAnswersInTest}</b>\nProcentu izpilde: <b>{percentages}%</b>\nLaiks: <b>{timeSpent}</b>\nPar testa kārtošanu tu saņēmi <b>{points}</b> punktus!\n\nIevadi <b>/review</b>, lai apskatītu uzdevumus un risinājumus.",
             reply_markup=kb.tryAgain)
@@ -2760,21 +2782,49 @@ async def TestEnd(message: Message, state: FSMContext):
         timeSpent = f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}"
         db.query(UserStats).filter_by(id=1).first().correct_answers += correctAnswersInTest
         db.query(UserStats).filter_by(id=1).first().wrong_answers += wrongAnswersInTest
-        date_time_list = json.loads(db.query(UserStats).filter_by(id=1).first().date_time)
+
+        date_time = db.query(UserHistory).filter_by(user_id=1).first().date_time
+        date_time_list = json.loads(date_time) if date_time and date_time != '' else []
         date_time_list.append(str(fixedCurrentDateTime))
-        db.query(UserStats).filter_by(id=1).first().date_time = json.dumps(date_time_list)
-        db["subject"].append(selectedSubject)
-        db["difficulty"].append(selectedDifficulty)
+        db.query(UserHistory).filter_by(user_id=1).first().date_time = json.dumps(date_time_list)
+
         user_history = db.query(UserHistory).filter_by(user_id=1).first()
+
+        subject_list = json.loads(user_history.subject) if user_history.subject and user_history.subject != '' else []
+        difficulty_list = json.loads(user_history.difficulty) if user_history.difficulty and user_history.difficulty != '' else []
+        subject_list.append(selectedSubject)
+        difficulty_list.append(selectedDifficulty)
+        user_history.subject = json.dumps(subject_list)
+        user_history.difficulty = json.dumps(difficulty_list)
+
         if selectedTestType != '':
-            user_history.test_mode = json.dumps(json.loads(user_history.test_mode) + [selectedTestType])
+            test_mode_list = json.loads(user_history.test_mode) if user_history.test_mode and user_history.test_mode != '' else []
+            test_mode_list.append(selectedTestType)
+            user_history.test_mode = json.dumps(test_mode_list)
         else:
-            user_history.test_mode = json.dumps(json.loads(user_history.test_mode) + ["Ikdienas jautājums"])
-            user_history.correct_answers_in_test = json.dumps(json.loads(user_history.correct_answers_in_test) + [correctAnswersInTest])
-            user_history.wrong_answers_in_test = json.dumps(json.loads(user_history.wrong_answers_in_test) + [wrongAnswersInTest])
-            user_history.percentages = json.dumps(json.loads(user_history.percentages) + [percentages])
-            user_history.test_time = json.dumps(json.loads(user_history.test_time) + [timeSpent])
-            user_history.obtained_points = json.dumps(json.loads(user_history.obtained_points) + [points])
+            test_mode_list = json.loads(user_history.test_mode) if user_history.test_mode and user_history.test_mode != '' else []
+            test_mode_list.append("Ikdienas jautājums")
+            user_history.test_mode = json.dumps(test_mode_list)
+
+            correct_answers_list = json.loads(user_history.correct_answers_in_test) if user_history.correct_answers_in_test and user_history.correct_answers_in_test != '' else []
+            correct_answers_list.append(correctAnswersInTest)
+            user_history.correct_answers_in_test = json.dumps(correct_answers_list)
+
+            wrong_answers_list = json.loads(user_history.wrong_answers_in_test) if user_history.wrong_answers_in_test and user_history.wrong_answers_in_test != '' else []
+            wrong_answers_list.append(wrongAnswersInTest)
+            user_history.wrong_answers_in_test = json.dumps(wrong_answers_list)
+
+            percentages_list = json.loads(user_history.percentages) if user_history.percentages and user_history.percentages != '' else []
+            percentages_list.append(percentages)
+            user_history.percentages = json.dumps(percentages_list)
+
+            test_time_list = json.loads(user_history.test_time) if user_history.test_time and user_history.test_time != '' else []
+            test_time_list.append(timeSpent)
+            user_history.test_time = json.dumps(test_time_list)
+
+            obtained_points_list = json.loads(user_history.obtained_points) if user_history.obtained_points and user_history.obtained_points != '' else []
+            obtained_points_list.append(points)
+            user_history.obtained_points = json.dumps(obtained_points_list)
         wrongQuestionNumber = db.query(UserStats).filter_by(id=1).first().third_test_lives_amount
         await currentQuestion.edit_text(
             f"Diemžēl tu nepareizi atbildēji uz {wrongQuestionNumber} jautājumiem, un esi izkritis no testa. Pamēģini vēlreiz!\nPareizās atbildes: <b>{correctAnswersInTest}</b>\nNepareizas atbildes: <b>{wrongAnswersInTest}</b>\nProcentu izpilde: <b>{percentages}%</b>\nLaiks: <b>{timeSpent}</b>",
@@ -2792,21 +2842,83 @@ async def TestEnd(message: Message, state: FSMContext):
         db.query(UserStats).filter_by(id=1).first().correct_answers += correctAnswersInTest
         db.query(UserStats).filter_by(id=1).first().wrong_answers += wrongAnswersInTest
         db.query(UserStats).filter_by(id=1).first().points += points
-        date_time_list = json.loads(db.query(UserHistory).filter_by(id=1).first().date_time)
+
+        date_time_raw = db.query(UserHistory).filter_by(id=1).first().date_time
+        if date_time_raw:
+            date_time_list = json.loads(date_time_raw)
+        else:
+            date_time_list = []
         date_time_list.append(str(fixedCurrentDateTime))
         db.query(UserHistory).filter_by(id=1).first().date_time = json.dumps(date_time_list)
+
         user_history = db.query(UserHistory).filter_by(user_id=1).first()
-        user_history.subject = json.dumps(json.loads(user_history.subject) + [selectedSubject])
-        user_history.difficulty = json.dumps(json.loads(user_history.difficulty) + [selectedDifficulty])
-        if selectedTestType != '':
-            user_history.test_mode = json.dumps(json.loads(user_history.test_mode) + [selectedTestType])
+
+        subject_raw = user_history.subject
+        if subject_raw:
+            subject_list = json.loads(subject_raw)
         else:
-            user_history.test_mode = json.dumps(json.loads(user_history.test_mode) + ["Ikdienas jautājums"])
-        user_history.correct_answers_in_test = json.dumps(json.loads(user_history.correct_answers_in_test) + [correctAnswersInTest])
-        user_history.wrong_answers_in_test = json.dumps(json.loads(user_history.wrong_answers_in_test) + [wrongAnswersInTest])
-        user_history.percentages = json.dumps(json.loads(user_history.percentages) + [percentages])
-        user_history.test_time = json.dumps(json.loads(user_history.test_time) + [timeSpent])
-        user_history.obtained_points = json.dumps(json.loads(user_history.obtained_points) + [points])
+            subject_list = []
+        subject_list.append(selectedSubject)
+        user_history.subject = json.dumps(subject_list)
+
+        difficulty_raw = user_history.difficulty
+        if difficulty_raw:
+            difficulty_list = json.loads(difficulty_raw)
+        else:
+            difficulty_list = []
+        difficulty_list.append(selectedDifficulty)
+        user_history.difficulty = json.dumps(difficulty_list)
+
+        test_mode_raw = user_history.test_mode
+        if test_mode_raw:
+            test_mode_list = json.loads(test_mode_raw)
+        else:
+            test_mode_list = []
+        if selectedTestType != '':
+            test_mode_list.append(selectedTestType)
+        else:
+            test_mode_list.append("Ikdienas jautājums")
+        user_history.test_mode = json.dumps(test_mode_list)
+
+        correct_answers_raw = user_history.correct_answers_in_test
+        if correct_answers_raw:
+            correct_answers_list = json.loads(correct_answers_raw)
+        else:
+            correct_answers_list = []
+        correct_answers_list.append(correctAnswersInTest)
+        user_history.correct_answers_in_test = json.dumps(correct_answers_list)
+
+        wrong_answers_raw = user_history.wrong_answers_in_test
+        if wrong_answers_raw:
+            wrong_answers_list = json.loads(wrong_answers_raw)
+        else:
+            wrong_answers_list = []
+        wrong_answers_list.append(wrongAnswersInTest)
+        user_history.wrong_answers_in_test = json.dumps(wrong_answers_list)
+
+        percentages_raw = user_history.percentages
+        if percentages_raw:
+            percentages_list = json.loads(percentages_raw)
+        else:
+            percentages_list = []
+        percentages_list.append(percentages)
+        user_history.percentages = json.dumps(percentages_list)
+
+        test_time_raw = user_history.test_time
+        if test_time_raw:
+            test_time_list = json.loads(test_time_raw)
+        else:
+            test_time_list = []
+        test_time_list.append(timeSpent)
+        user_history.test_time = json.dumps(test_time_list)
+
+        obtained_points_raw = user_history.obtained_points
+        if obtained_points_raw:
+            obtained_points_list = json.loads(obtained_points_raw)
+        else:
+            obtained_points_list = []
+        obtained_points_list.append(points)
+        user_history.obtained_points = json.dumps(obtained_points_list)
         if not db.query(UserStats).filter_by(id=1).first().second_attempt_daily_activated:
             db.query(UserStats).filter_by(id=1).first().completed += 1
             await currentQuestion.edit_text(
