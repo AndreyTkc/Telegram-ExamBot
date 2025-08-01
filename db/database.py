@@ -2,14 +2,12 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# SQLite database connection
 DATABASE_URL = "sqlite:///./main.db"
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# Example user stats model
 class UserStats(Base):
     __tablename__ = "user_stats"
     id = Column(Integer, primary_key=True, index=True)
@@ -25,8 +23,8 @@ class UserStats(Base):
 class UserHistory(Base):
     __tablename__ = "user_history"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, default=1)  # Example user ID
-    date_time = Column(String, default="[]")  # Store as JSON string
+    user_id = Column(Integer, default=1)
+    date_time = Column(String, default="[]")
     subject = Column(String, default="[]")
     difficulty = Column(String, default="[]")
     test_mode = Column(String, default="[]")
